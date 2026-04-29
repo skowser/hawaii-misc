@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#c8351f" />
+<title>Hawaii '26 — Daily Itinerary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Bowlby+One+SC&family=Yellowtail&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sand:#efe6d2; --sand-2:#e6dcc4;
+    --red:#c8351f; --red-ink:#8e2515;
+    --teal:#4a8fa3; --teal-dk:#2d6273;
+    --mustard:#e8a23a; --burnt:#d8631e;
+    --green:#2f5f3b; --pink:#d96a86; --plum:#6b1f3a;
+    --ink:#2a1d14; --ink-2:#5a4634;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:"Work Sans",system-ui,sans-serif;
+    color:var(--ink);background:var(--sand);
+    overflow-x:hidden;min-height:100dvh;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.45;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .15  0 0 0 0 .1  0 0 0 0 .05  0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
+    background:radial-gradient(120% 90% at 50% 30%, transparent 60%, rgba(60,30,10,.18) 100%);
+  }
+
+  .app{
+    max-width:520px;margin:0 auto;min-height:100dvh;
+    padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 100px);
+    position:relative;z-index:2;
+  }
+
+  .header{
+    padding:18px 22px 6px;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+  }
+  .brand{
+    font-family:"Alfa Slab One",serif;font-size:24px;line-height:.9;letter-spacing:.01em;
+    color:var(--red);text-transform:uppercase;transform:rotate(-2deg);
+  }
+  .brand .yr{color:var(--ink);font-size:13px;display:block;letter-spacing:.06em;margin-top:2px;font-family:"Work Sans",sans-serif;font-weight:700;transform:rotate(2deg)}
+  .pill{
+    font-family:"Bowlby One SC",sans-serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+    background:var(--ink);color:var(--sand);padding:7px 11px;border-radius:4px;border:2px solid var(--ink);
+  }
+  .pill.off{background:var(--sand);color:var(--ink)}
+
+  .card{
+    margin:8px 14px 0;background:var(--sand-2);
+    border:2.5px solid var(--ink);border-radius:6px;
+    box-shadow:5px 5px 0 var(--ink), 12px 12px 30px -8px rgba(0,0,0,.25);
+    position:relative;
+    opacity:0;transform:translateY(6px);
+    transition:opacity .35s ease, transform .35s ease;
+  }
+  .card.in{opacity:1;transform:none}
+
+  .hero{
+    position:relative;aspect-ratio:4/5;width:100%;
+    overflow:hidden;border-bottom:2.5px solid var(--ink);
+    background:var(--teal);
+  }
+  .hero .photo{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    filter:saturate(.88) contrast(.95) sepia(.15);
+    transform:scale(1.05);
+    transition:transform 1.2s ease, opacity .4s ease;
+    z-index:1;
+  }
+  .card.in .hero .photo{transform:scale(1)}
+  .hero::before{
+    content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:
+      linear-gradient(180deg, rgba(232,162,58,.12) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0) 60%, rgba(42,29,20,.55) 100%),
+      radial-gradient(120% 90% at 50% 35%, rgba(239,230,210,0) 60%, rgba(239,230,210,.20) 100%);
+  }
+  .hero::after{
+    content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
+    background-image:radial-gradient(rgba(42,29,20,.16) 1px, transparent 1.4px);
+    background-size:4px 4px;mix-blend-mode:multiply;opacity:.28;
+  }
+
+  .poster-title{
+    position:absolute;left:0;right:0;top:0;
+    padding:22px 16px 0;text-align:center;pointer-events:none;z-index:4;
+  }
+  .poster-title .t{
+    font-family:"Alfa Slab One",serif;
+    font-size:46px;line-height:.85;letter-spacing:-0.005em;
+    color:var(--red);text-transform:uppercase;
+    -webkit-text-stroke:1.5px var(--ink);
+    text-shadow:3px 3px 0 var(--sand), 4px 4px 0 var(--ink);
+    transform:rotate(-3deg);
+    display:inline-block;padding:0 8px;max-width:100%;word-break:break-word;
+  }
+  .poster-title .s{
+    display:block;font-family:"Work Sans",sans-serif;font-weight:700;
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--sand);background:var(--teal-dk);
+    border:2px solid var(--ink);padding:5px 10px;
+    margin:10px auto 0;width:fit-content;
+    box-shadow:2px 2px 0 var(--ink);transform:rotate(1deg);
+  }
+
+  .signpost{
+    position:absolute;right:14px;bottom:14px;z-index:4;
+    background:var(--plum);color:var(--sand);
+    border:2px solid var(--ink);
+    padding:8px 18px 8px 12px;
+    box-shadow:3px 3px 0 var(--ink);
+    transform:rotate(3deg);
+    font-family:"Bowlby One SC",sans-serif;
+    font-size:13px;letter-spacing:.16em;text-transform:uppercase;
+    clip-path:polygon(0 0, 100% 0, 100% 30%, 110% 50%, 100% 70%, 100% 100%, 0 100%);
+  }
+  .signpost.maui{background:var(--burnt)}
+  .signpost.travel{background:var(--green)}
+
+  .daystamp{
+    position:absolute;left:14px;bottom:14px;z-index:4;
+    background:var(--mustard);color:var(--ink);
+    border:2.5px solid var(--ink);
+    padding:7px 11px 8px;box-shadow:3px 3px 0 var(--ink);
+    transform:rotate(-4deg);text-align:center;min-width:62px;
+  }
+  .daystamp .lbl{font-family:"Work Sans",sans-serif;font-weight:700;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--red-ink);line-height:1}
+  .daystamp .num{font-family:"Alfa Slab One",serif;font-size:28px;line-height:.95;color:var(--ink)}
+  .daystamp .of{font-family:"Work Sans",sans-serif;font-weight:600;font-size:9px;letter-spacing:.14em;color:var(--ink-2);margin-top:1px}
+
+  .content{padding:22px 22px 24px}
+
+  .vibe-row{
+    display:flex;align-items:center;gap:10px;
+    margin:-2px 0 14px;flex-wrap:wrap;
+  }
+  .vibe-row .date{
+    font-family:"Bowlby One SC",sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--red);
+  }
+  .vibe-row .dot{width:4px;height:4px;border-radius:50%;background:var(--ink-2)}
+  .vibe-row .vibe{
+    font-family:"Yellowtail",cursive;font-size:24px;line-height:1;color:var(--green);
+  }
+
+  .h{
+    font-family:"Alfa Slab One",serif;font-size:22px;color:var(--red);
+    text-transform:uppercase;letter-spacing:.005em;
+    display:flex;align-items:center;gap:10px;line-height:1;
+  }
+  .h .star{font-size:14px;color:var(--mustard);-webkit-text-stroke:1px var(--ink);}
+  .h.teal{color:var(--teal-dk)}
+  .h.green{color:var(--green)}
+
+  .section + .section{margin-top:22px}
+
+  .timeline{margin-top:14px;position:relative;padding-left:20px}
+  .timeline::before{
+    content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;
+    background:repeating-linear-gradient(180deg, var(--ink) 0 5px, transparent 5px 10px);
+  }
+  .step{position:relative;padding:5px 0 5px 4px}
+  .step::before{
+    content:"";position:absolute;left:-21px;top:11px;width:12px;height:12px;
+    background:var(--mustard);border:2px solid var(--ink);border-radius:2px;transform:rotate(45deg);
+  }
+  .step .when{
+    font-family:"Bowlby One SC",sans-serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--red);
+  }
+  .step .what{
+    font-family:"Work Sans",sans-serif;font-weight:500;font-size:15.5px;line-height:1.45;
+    color:var(--ink);margin-top:2px;
+  }
+  .step .what b{font-weight:700;color:var(--ink)}
+  .step .note{
+    font-family:"Work Sans",sans-serif;font-size:12.5px;color:var(--ink-2);
+    margin-top:3px;line-height:1.4;font-style:italic;
+  }
+
+  .alertbox{
+    margin-top:16px;background:var(--red);color:var(--sand);
+    border:2px solid var(--ink);padding:10px 13px;
+    box-shadow:3px 3px 0 var(--ink);
+    font-family:"Work Sans",sans-serif;font-weight:600;font-size:13px;line-height:1.4;
+    transform:rotate(-.5deg);
+  }
+  .alertbox b{font-family:"Bowlby One SC",sans-serif;font-weight:normal;letter-spacing:.1em;text-transform:uppercase;font-size:11.5px;display:block;margin-bottom:2px;color:var(--mustard)}
+
+  .bringbox{
+    margin-top:14px;background:var(--sand);
+    border:2px solid var(--ink);padding:14px 14px 12px;
+    box-shadow:3px 3px 0 var(--ink);
+  }
+  .bringlist{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+  .tag{
+    font-family:"Work Sans",sans-serif;font-weight:600;font-size:12.5px;
+    background:var(--sand-2);color:var(--ink);
+    border:1.5px solid var(--ink);padding:5px 10px;border-radius:2px;
+  }
+  .tag.warm{background:var(--mustard)}
+  .tag.cool{background:#cfe0db}
+
+  .logi{
+    margin-top:16px;background:var(--green);color:var(--sand);
+    border:2px solid var(--ink);padding:14px 16px;
+    box-shadow:4px 4px 0 var(--ink);position:relative;
+  }
+  .logi::before{
+    content:"";position:absolute;top:-6px;left:14px;width:10px;height:10px;border-radius:50%;
+    background:var(--sand);border:2px solid var(--ink);
+  }
+  .logi .h{color:var(--mustard);font-size:16px;letter-spacing:.04em}
+  .logi .h .star{color:var(--sand)}
+  .logi .row{
+    display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-top:7px;
+    border-bottom:1px dashed rgba(239,230,210,.3);padding-bottom:6px;
+  }
+  .logi .row:last-child{border:0;padding-bottom:0}
+  .logi .row span:first-child{opacity:.85;font-weight:500;text-transform:uppercase;letter-spacing:.08em;font-size:11px}
+  .logi .row span:last-child{font-weight:700;text-align:right}
+
+  .nav{
+    position:fixed;left:0;right:0;bottom:0;z-index:20;
+    padding:12px 14px calc(14px + env(safe-area-inset-bottom));
+    background:linear-gradient(180deg, rgba(239,230,210,0) 0%, rgba(239,230,210,.95) 35%, var(--sand) 100%);
+    pointer-events:none;
+  }
+  .navbar{
+    pointer-events:auto;max-width:520px;margin:0 auto;
+    background:var(--sand-2);border:2.5px solid var(--ink);
+    border-radius:8px;padding:7px;
+    display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;
+    box-shadow:4px 4px 0 var(--ink);
+  }
+  .navbtn{
+    border:2px solid var(--ink);background:var(--red);color:var(--sand);
+    width:46px;height:46px;border-radius:6px;
+    display:grid;place-items:center;cursor:pointer;
+    font-family:"Alfa Slab One",serif;font-size:22px;line-height:1;
+    transition:transform .12s ease, background .2s ease;
+    box-shadow:2px 2px 0 var(--ink);
+  }
+  .navbtn:active:not(:disabled){transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+  .navbtn:disabled{background:var(--sand);color:var(--ink-2);cursor:not-allowed;opacity:.6}
+  .navlabel{text-align:center}
+  .navlabel .a{font-family:"Alfa Slab One",serif;font-size:14px;line-height:1.05;color:var(--red);text-transform:uppercase;letter-spacing:0}
+  .navlabel .b{font-family:"Bowlby One SC",sans-serif;font-size:9.5px;letter-spacing:.16em;color:var(--ink-2);margin-top:3px;text-transform:uppercase}
+
+  .todaybtn{
+    position:fixed;left:50%;transform:translateX(-50%);
+    bottom:calc(96px + env(safe-area-inset-bottom));z-index:21;
+    background:var(--mustard);color:var(--ink);
+    border:2.5px solid var(--ink);border-radius:6px;
+    padding:8px 14px;font-family:"Bowlby One SC",sans-serif;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    box-shadow:3px 3px 0 var(--ink);cursor:pointer;display:none;
+  }
+  .todaybtn.show{display:inline-flex;align-items:center;gap:6px}
+  .todaybtn:active{transform:translateX(-50%) translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+
+  .foot{
+    text-align:center;font-family:"Yellowtail",cursive;
+    color:var(--green);font-size:22px;margin:14px 0 6px;transform:rotate(-1deg);
+  }
+
+  [data-island="oahu"] .poster-title .s{background:var(--teal-dk)}
+  [data-island="maui"] .poster-title .s{background:var(--burnt)}
+  [data-island="travel"] .poster-title .s{background:var(--plum)}
+
+  @media (max-width:380px){
+    .poster-title .t{font-size:36px}
+    .daystamp .num{font-size:24px}
+    .h{font-size:19px}
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <header class="header">
+    <div class="brand">Aloha,<span class="yr">LUCA · '26</span></div>
+    <div id="todayPill" class="pill">Today</div>
+  </header>
+
+  <main id="card" class="card" data-island="oahu"></main>
+
+  <p class="foot">made with sand in the keyboard 🌺</p>
+
+  <button class="todaybtn" id="todayBtn">↺ Jump to today</button>
+
+  <nav class="nav">
+    <div class="navbar">
+      <button class="navbtn" id="prev" aria-label="Previous day">‹</button>
+      <div class="navlabel">
+        <div class="a" id="navTitle">—</div>
+        <div class="b" id="navSub">— of 9</div>
+      </div>
+      <button class="navbtn" id="next" aria-label="Next day">›</button>
+    </div>
+  </nav>
+</div>
+
+<script>
+const FALLBACK_SVG = `
+<svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%;display:block">
+  <rect width="400" height="500" fill="#e8a23a"/>
+  <rect y="280" width="400" height="60" fill="#4a8fa3"/>
+  <rect y="340" width="400" height="160" fill="#e8a23a"/>
+  <path d="M0 280 L60 240 L130 270 L190 230 L260 265 L330 235 L400 270 L400 280 Z" fill="#6b1f3a"/>
+  <path d="M340 340 Q330 280 360 230 Q335 245 320 230 Q330 260 310 280 Q345 285 340 340 Z" fill="#2f5f3b"/>
+  <circle cx="120" cy="160" r="40" fill="#d96a86"/>
+  <path d="M120 130 Q105 150 120 175 Q135 150 120 130 Z" fill="#a8425d"/>
+</svg>`;
+
+const TRIP = [
+  {
+    date:"2026-04-29", island:"oahu", island_label:"Oahu",
+    title:"Aloha, Oahu", vibe:"land · decompress · soak it in",
+    sub:"Arrive Oahu / Easy Waikiki Night",
+    photo:"day1.jpeg",
+    plan:[
+      {when:"4:45 PM", what:"<b>UA1509</b> — SFO → HNL", note:"5h 35m · conf NBDE41 · lands 7:20pm"},
+      {when:"7:00 PM", what:"Pick up the <b>Mustang convertible</b> at HNL", note:"Turo · coordinate w/ Gabriel — flight lands 7:20pm"},
+      {when:"Sunset",  what:"<b>Waikiki Beach walk</b>", note:"don't overplan, just feel the air"},
+      {when:"Dinner",  what:"<b>Marukame Udon</b> — fresh udon, line moves fast"},
+      {when:"Night",   what:"Low-key bars, beach walk, early sleep"},
+    ],
+    bring:["Travel docs","Cash","Reef-safe sunscreen"],
+    alert:{ttl:"Heads up", body:"Check-in at <b>2947 Kalākaua Ave #601</b> — lockbox code = last 4 of phone on file. 2 fobs ($150 each if lost)."},
+    logi:{ttl:"Stay · Oahu", lines:[
+      ["Where","Diamond Head Beach Hotel · 2BR oceanfront"],
+      ["Check-in","Apr 29 · 3:00 PM"],
+      ["WiFi","SpectrumSetup-E3 / quotealbum738"],
+      ["Host","Mark · 808-379-3718"],
+    ]},
+  },
+  {
+    date:"2026-04-30", island:"oahu", island_label:"Oahu",
+    title:"Lanikai & Diamond Head", vibe:"best beach in the US · iconic sunset",
+    sub:"Surf, postcard beach, golden hour",
+    photo:"day2.jpg",
+    plan:[
+      {when:"Morning", what:"Sleep in, walk Waikiki / Ala Moana — coffee, poke"},
+      {when:"10:00 AM", what:"<b>Surf lesson at Waikiki Beach</b>", note:"2450 Prince Edward St, Honolulu 96815"},
+      {when:"Noon", what:"Drive to <b>Lanikai Beach</b> (~30 min)", note:"turquoise water · two offshore islands · the postcard"},
+      {when:"Afternoon", what:"<b>Lanikai Pillbox Hike</b> — 1.8 mi, 45 min", note:"panoramic Windward Coast — bring the GoPro"},
+      {when:"Late aftn", what:"<b>Makapu'u Lookout</b> on the way back", note:"quick stop, dramatic clifftop views"},
+      {when:"5:00 PM", what:"<b>Diamond Head Hike</b> — 1.6 mi RT", note:"360° views of Honolulu at golden hour"},
+      {when:"Night", what:"<b>Livestock Tavern</b> or Chinatown bars — first real night out"},
+    ],
+    bring:["Sunscreen","Swimsuit","Towel","Hiking shoes","GoPro + head mount"],
+    alert:null, logi:null,
+  },
+  {
+    date:"2026-05-01", island:"oahu", island_label:"Oahu",
+    title:"Sharks & Temples", vibe:"cage dive · then go out properly",
+    sub:"North Shore + Byodo-In + Last Oahu Night",
+    photo:"day3.jpg",
+    plan:[
+      {when:"8:30 AM", what:"<b>Leave the house</b> — 30 min buffer for 10am show"},
+      {when:"10:00 AM", what:"<b>North Shore Shark Dive</b> — Haleiwa", note:"66-101 Haleiwa Rd · open-water cage with Galapagos sharks · ~2 hrs"},
+      {when:"Afternoon", what:"<b>Byodo-In Temple</b> — Kyoto-style, Ko'olau backdrop", note:"on the way back · take H-3 freeway (most beautiful in HI)"},
+      {when:"Optional", what:"<b>Kakaʻako</b> mural district — Morning Glass coffee or Da Cove açaí"},
+      {when:"7:45 PM", what:"<b>Hilton fireworks</b> — visible from Waikiki Beach, free"},
+      {when:"Night", what:"Nicer dinner + bars — <b>last Oahu night</b>"},
+    ],
+    bring:["Camera","Swimsuit","Walking shoes","Sign every waiver"],
+    alert:{ttl:"Pace yourself", body:"<b>6:05 AM flight tomorrow.</b> Pack tonight."},
+    logi:null,
+  },
+  {
+    date:"2026-05-02", island:"maui", island_label:"Maui",
+    title:"Hello, Maui", vibe:"Jeep doors off · beach mode",
+    sub:"Fly to Maui / Big Beach / Sunset",
+    photo:"day4.jpg",
+    plan:[
+      {when:"By 8:00 AM", what:"<b>Return Mustang</b> at HNL"},
+      {when:"9:15 AM", what:"<b>HA1056</b> — HNL → OGG", note:"42 min · lands 9:57am"},
+      {when:"~10 AM", what:"<b>Pick up Jeep Wrangler</b> at OGG", note:"Turo · Stacy · ask: doors off? top off? free chairs + cooler?"},
+      {when:"Afternoon", what:"Bags stay in Jeep until 4pm — <b>find a beach</b>", note:"check-in at Royal Mauian after 4 PM"},
+      {when:"Late aftn", what:"<b>Big Beach (Makena)</b> — golden sand, strong waves, less touristy"},
+      {when:"Sunset", what:"From <b>Big Beach</b> or the Wailea Beach Path"},
+      {when:"Dinner", what:"<b>Monkeypod Kitchen</b> — happy hour, craft cocktails"},
+      {when:"Night", what:"Early bed — snorkel boat is brutal early"},
+    ],
+    bring:["Sunglasses","Sunscreen","Swimsuit"],
+    alert:{ttl:"Bag logistics", body:"Land 6:45am-ish but <b>Royal Mauian check-in is 4 PM</b>. Bags live in the Jeep."},
+    logi:{ttl:"Stay · Maui", lines:[
+      ["Where","Royal Mauian #604 · 3BR Penthouse"],
+      ["Check-in","May 2 · after 4:00 PM"],
+      ["Confirmation","HM23RDN9RX"],
+      ["Host","Karen · +1 425-260-9682"],
+    ]},
+  },
+  {
+    date:"2026-05-03", island:"maui", island_label:"Maui",
+    title:"Molokini Morning", vibe:"bucket-list ocean · lazy aftn",
+    sub:"Snorkel the crater, chill the rest",
+    photo:"day5.webp",
+    plan:[
+      {when:"Pre-dawn", what:"<b>Boat depart Ma'alaea ~6–7am</b>", note:"book in advance — fills up"},
+      {when:"Morning", what:"<b>Molokini Crater</b> snorkel — 150+ ft viz", note:"volcanic crater 3 mi offshore · sea turtles at Turtle Town"},
+      {when:"Noon", what:"Back on land. Beach mode."},
+      {when:"Afternoon", what:"<b>Kamaole Beach III</b> — easy snorkeling off the sand"},
+      {when:"Cooldown", what:"<b>Ululani's Shave Ice</b> in Kihei"},
+      {when:"Night", what:"Laid-back dinner — save the nice spots for later"},
+    ],
+    bring:["Swimsuit","Towel","Motion sickness meds","Reef-safe sunscreen","GoPro"],
+    alert:null, logi:null,
+  },
+  {
+    date:"2026-05-04", island:"maui", island_label:"Maui",
+    title:"Road to Hana", vibe:"doors off · waterfalls · bamboo",
+    sub:"The Big One — full adventure day",
+    photo:"day6.webp",
+    plan:[
+      {when:"By 7:00 AM", what:"<b>Roll out</b> · gas up in Paia (no stations on Hana Hwy)"},
+      {when:"Stop 1", what:"<b>Ho'okipa Beach</b> — surfers + sea turtles from the lookout"},
+      {when:"Stop 2", what:"<b>Twin Falls</b> — short waterfall hike, warm-up"},
+      {when:"Stop 3", what:"<b>Garden of Eden</b> arboretum somewhere in here"},
+      {when:"Stop 4", what:"<b>Ke'anae Peninsula</b> — Aunty Sandy's banana bread", note:"cash only · dramatic coastline"},
+      {when:"Stop 5", what:"<b>Wailua Falls</b> — roadside, quick photo"},
+      {when:"Stop 6", what:"<b>Wai'ānapanapa State Park</b> — black sand, sea caves", note:"reservation REQUIRED for out-of-state visitors"},
+      {when:"Stop 7", what:"<b>Pipiwai Trail</b> — 4 mi RT to Waimoku Falls", note:"rainforest → bamboo → 400ft falls · 2–3 hrs · the signature hike"},
+      {when:"Night", what:"Simple dinner. Early bed. You'll be destroyed."},
+    ],
+    bring:["Water","Snacks","Swimsuit","Towel","Water shoes","Dry bag","Cash","Sunscreen"],
+    alert:{ttl:"Critical", body:"<b>Start by 7am.</b> Last gas in Paia. Doors off if Stacy lets you."},
+    logi:null,
+  },
+  {
+    date:"2026-05-05", island:"maui", island_label:"Maui",
+    title:"Sunset Sail", vibe:"recover · then the best evening",
+    sub:"Lazy day, then catamaran into the sunset",
+    photo:"day7.webp",
+    plan:[
+      {when:"Morning", what:"<b>Sleep in.</b> You earned it."},
+      {when:"Midday", what:"<b>Wailea Beach</b> or Kamaole — beach + read"},
+      {when:"Optional", what:"<b>Paia town</b> — surf shops, Paia Fish Market for lunch"},
+      {when:"Evening", what:"<b>Sunset Sail from Ka'anapali</b>", note:"Trilogy Deluxe (best reviewed, ~$130–160pp) · or Sail Maui from Ma'alaea (smaller, more chill)"},
+      {when:"On board", what:"Open bar, appetizers, Pacific sunset 🌅"},
+    ],
+    bring:["Something decent for the boat","Layer for after sunset","Camera","Cash for tips"],
+    alert:{ttl:"FYI", body:"<b>'Iao Valley is closed.</b> Skip it."},
+    logi:null,
+  },
+  {
+    date:"2026-05-06", island:"maui", island_label:"Maui",
+    title:"Haleakalā", vibe:"Mars at 10,000 ft",
+    sub:"Volcanic crater · best sunset of your life",
+    photo:"day8.webp",
+    plan:[
+      {when:"Morning", what:"Chill or beach"},
+      {when:"Optional", what:"<b>Waihee Ridge Trail</b> — 4.2 mi, steep, panoramic"},
+      {when:"~3:00 PM", what:"<b>Drive to Haleakalā summit</b> — ~1.5 hr from Kihei", note:"10,023 ft · pay at gate, no permit needed"},
+      {when:"Pre-sunset", what:"<b>Sliding Sands Trail</b> — hike into the crater", note:"1–2 mi gives Mars-like views · don't go too deep, climb back is at altitude"},
+      {when:"Sunset", what:"Sun drops below the clouds. Crater glows. Freezing. Unforgettable."},
+      {when:"Night", what:"Slow drive down switchbacks · late dinner"},
+    ],
+    bring:["Jacket","Hoodie","Long pants","Warm socks","Headlamp","Blanket","Snacks"],
+    alert:{ttl:"Non-negotiable", body:"<b>30–50°F at the summit.</b> Layers are mandatory."},
+    logi:null,
+  },
+  {
+    date:"2026-05-07", island:"travel", island_label:"Travel Day",
+    title:"Aloha, Goodbye", vibe:"slow morning · the long way home",
+    sub:"Final Maui Morning / Fly Home",
+    photo:"day9.webp",
+    plan:[
+      {when:"Morning", what:"Sleep in · last beach session or coastal Jeep cruise"},
+      {when:"Optional", what:"<b>Nakalele Blowhole</b> — ~45 min from Kihei, short scramble"},
+      {when:"Brunch", what:"Somewhere good. You decide."},
+      {when:"By 10 AM", what:"<b>Checkout</b> Royal Mauian"},
+      {when:"By 3:30 PM", what:"<b>Return Jeep</b> at OGG (buffer before 4:58pm flight)"},
+      {when:"4:58 PM", what:"<b>AS1165</b> — OGG → HNL", note:"41 min · ~4 hr layover at HNL"},
+      {when:"9:30 PM", what:"<b>UA1411</b> — HNL → SFO", note:"5h 10m · lands 5:40am · conf NBDE41"},
+    ],
+    bring:["Patience","Layers for the red-eye","Water bottle"],
+    alert:null, logi:null,
+  },
+];
+
+const $ = s => document.querySelector(s);
+const card = $("#card");
+const todayPill = $("#todayPill");
+const todayBtn = $("#todayBtn");
+
+function todayISO(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function indexForToday(){
+  const t = todayISO();
+  const exact = TRIP.findIndex(d => d.date === t);
+  if (exact !== -1) return { idx: exact, onDay: true };
+  if (t < TRIP[0].date) return { idx: 0, onDay: false };
+  if (t > TRIP[TRIP.length-1].date) return { idx: TRIP.length-1, onDay: false };
+  for (let i=0;i<TRIP.length-1;i++){
+    if (t > TRIP[i].date && t < TRIP[i+1].date) return { idx:i, onDay:false };
+  }
+  return { idx:0, onDay:false };
+}
+function fmtDate(iso){
+  const [y,m,d] = iso.split("-").map(Number);
+  const dt = new Date(y, m-1, d);
+  const dow = dt.toLocaleDateString("en-US", { weekday:"long" });
+  const mo  = dt.toLocaleDateString("en-US", { month:"long" });
+  return `${dow} · ${mo} ${d}`;
+}
+
+let current = 0;
+const todayInfo = indexForToday();
+
+function render(i){
+  current = i;
+  const day = TRIP[i];
+  const isToday = todayInfo.onDay && todayInfo.idx === i;
+
+  card.dataset.island = day.island;
+  card.classList.remove("in");
+
+  card.innerHTML = `
+    <div class="hero">
+      ${FALLBACK_SVG}
+      <img class="photo" src="${day.photo}" alt="" referrerpolicy="no-referrer"
+           onerror="this.style.display='none'" />
+      <div class="poster-title">
+        <div class="t">${day.title}</div>
+        <div class="s">${day.sub}</div>
+      </div>
+      <div class="daystamp">
+        <div class="lbl">Day</div>
+        <div class="num">${i+1}</div>
+        <div class="of">of ${TRIP.length}</div>
+      </div>
+      <div class="signpost ${day.island}">${day.island_label}</div>
+    </div>
+
+    <div class="content">
+      <div class="vibe-row">
+        <span class="date">${fmtDate(day.date)}</span>
+        <span class="dot"></span>
+        <span class="vibe">${day.vibe}</span>
+      </div>
+
+      <section class="section">
+        <div class="h"><span class="star">✦</span> The Plan</div>
+        <div class="timeline">
+          ${day.plan.map(s => `
+            <div class="step">
+              <div class="when">${s.when}</div>
+              <div class="what">${s.what}</div>
+              ${s.note ? `<div class="note">${s.note}</div>` : ``}
+            </div>`).join("")}
+        </div>
+        ${day.alert ? `<div class="alertbox"><b>⚠️ ${day.alert.ttl}</b>${day.alert.body}</div>` : ``}
+      </section>
+
+      <section class="section">
+        <div class="bringbox">
+          <div class="h teal"><span class="star">✦</span> What to bring</div>
+          <div class="bringlist">
+            ${day.bring.map((b,idx) => `<span class="tag ${idx%3===0?'warm':idx%3===1?'cool':''}">${b}</span>`).join("")}
+          </div>
+        </div>
+      </section>
+
+      ${day.logi ? `
+      <section class="section">
+        <div class="logi">
+          <div class="h"><span class="star">✦</span> ${day.logi.ttl}</div>
+          ${day.logi.lines.map(([k,v]) => `
+            <div class="row"><span>${k}</span><span>${v}</span></div>
+          `).join("")}
+        </div>
+      </section>` : ``}
+    </div>
+  `;
+
+  requestAnimationFrame(()=> requestAnimationFrame(()=> card.classList.add("in")));
+
+  $("#prev").disabled = (i === 0);
+  $("#next").disabled = (i === TRIP.length-1);
+  $("#navTitle").textContent = day.title;
+  $("#navSub").textContent = `Day ${i+1} of ${TRIP.length}`;
+
+  if (isToday){ todayPill.textContent = "Today"; todayPill.classList.remove("off"); }
+  else if (todayInfo.onDay){ todayPill.textContent = `Day ${todayInfo.idx+1} is today`; todayPill.classList.add("off"); }
+  else { todayPill.textContent = "Preview"; todayPill.classList.add("off"); }
+
+  if (!isToday && todayInfo.onDay) todayBtn.classList.add("show");
+  else todayBtn.classList.remove("show");
+
+  history.replaceState(null, "", `#day-${i+1}`);
+}
+
+function go(delta){
+  const next = Math.max(0, Math.min(TRIP.length-1, current + delta));
+  if (next !== current) render(next);
+}
+$("#prev").addEventListener("click", ()=>go(-1));
+$("#next").addEventListener("click", ()=>go(1));
+todayBtn.addEventListener("click", ()=>render(todayInfo.idx));
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft") go(-1);
+  if (e.key === "ArrowRight") go(1);
+});
+let tx=null;
+document.addEventListener("touchstart", e => { tx = e.touches[0].clientX; }, {passive:true});
+document.addEventListener("touchend",   e => {
+  if (tx==null) return;
+  const dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) > 60) go(dx < 0 ? 1 : -1);
+  tx = null;
+}, {passive:true});
+
+function bootIndex(){
+  const u = new URL(location.href);
+  const q = u.searchParams.get("day");
+  if (q && +q >= 1 && +q <= TRIP.length) return +q - 1;
+  const m = location.hash.match(/day-(\d+)/);
+  if (m && +m[1] >= 1 && +m[1] <= TRIP.length) return +m[1] - 1;
+  return todayInfo.idx;
+}
+render(bootIndex());
+</script>
+</body>
+</html>
