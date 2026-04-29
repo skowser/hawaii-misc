@@ -193,7 +193,7 @@
     font-family:"Work Sans",sans-serif;font-weight:600;font-size:13px;line-height:1.4;
     transform:rotate(-.5deg);
   }
-  .alertbox b{font-family:"Bowlby One SC",sans-serif;font-weight:normal;letter-spacing:.1em;text-transform:uppercase;font-size:11.5px;display:block;margin-bottom:2px;color:var(--mustard)}
+  .alertbox b{font-weight:800;color:var(--mustard)}
 
   .bringbox{
     margin-top:14px;background:var(--sand);
@@ -276,6 +276,22 @@
   [data-island="maui"] .poster-title .s{background:var(--burnt)}
   [data-island="travel"] .poster-title .s{background:var(--plum)}
 
+  .collapser{
+    background:transparent;border:0;padding:0;margin:0;cursor:pointer;
+    width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
+    text-align:left;color:inherit;font:inherit;
+  }
+  .collapser .chev{
+    flex:0 0 auto;width:24px;height:24px;display:grid;place-items:center;
+    border:2px solid var(--ink);background:var(--sand);color:var(--ink);
+    border-radius:4px;box-shadow:2px 2px 0 var(--ink);
+    font-family:"Alfa Slab One",serif;font-size:14px;line-height:1;
+    transition:transform .2s ease;
+  }
+  .section.open > .collapser .chev{transform:rotate(180deg)}
+  .collapse-body{display:none;margin-top:10px}
+  .section.open > .collapse-body{display:block}
+
   @media (max-width:380px){
     .poster-title .t{font-size:36px}
     .daystamp .num{font-size:24px}
@@ -326,7 +342,7 @@ const TRIP = [
     date:"2026-04-29", island:"oahu", island_label:"Oahu",
     title:"Aloha, Oahu", vibe:"land · decompress · soak it in",
     sub:"Arrive Oahu / Easy Waikiki Night",
-    photo:"day1.jpeg",
+    photo:"wakiki.jpg",
     plan:[
       {when:"4:45 PM", what:"<b>UA1509</b> — SFO → HNL", note:"5h 35m · conf NBDE41 · lands 7:20pm"},
       {when:"7:00 PM", what:"Pick up the <b>Mustang convertible</b> at HNL", note:"Turo · coordinate w/ Gabriel — flight lands 7:20pm"},
@@ -520,6 +536,17 @@ function fmtDate(iso){
 let current = 0;
 const todayInfo = indexForToday();
 
+const photoCache = new Map();
+function preloadPhoto(src){
+  if (!src || photoCache.has(src)) return photoCache.get(src);
+  const img = new Image();
+  img.decoding = "async";
+  img.src = src;
+  photoCache.set(src, img);
+  return img;
+}
+TRIP.forEach(d => preloadPhoto(d.photo));
+
 function render(i){
   current = i;
   const day = TRIP[i];
@@ -528,10 +555,18 @@ function render(i){
   card.dataset.island = day.island;
   card.classList.remove("in");
 
+  preloadPhoto(TRIP[i-1]?.photo);
+  preloadPhoto(TRIP[i+1]?.photo);
+
+  const cached = photoCache.get(day.photo);
+  const photoLoaded = cached && cached.complete && cached.naturalWidth > 0;
+
   card.innerHTML = `
     <div class="hero">
       ${FALLBACK_SVG}
       <img class="photo" src="${day.photo}" alt="" referrerpolicy="no-referrer"
+           ${photoLoaded ? '' : 'style="opacity:0"'}
+           onload="this.style.opacity=1"
            onerror="this.style.display='none'" />
       <div class="poster-title">
         <div class="t">${day.title}</div>
@@ -552,39 +587,72 @@ function render(i){
         <span class="vibe">${day.vibe}</span>
       </div>
 
-      <section class="section">
-        <div class="h"><span class="star">✦</span> The Plan</div>
-        <div class="timeline">
-          ${day.plan.map(s => `
-            <div class="step">
-              <div class="when">${s.when}</div>
-              <div class="what">${s.what}</div>
-              ${s.note ? `<div class="note">${s.note}</div>` : ``}
-            </div>`).join("")}
+      ${day.alert ? `
+      <section class="section open" data-collapse>
+        <button class="collapser" type="button" aria-expanded="true">
+          <div class="h"><span class="star">⚠️</span> ${day.alert.ttl}</div>
+          <span class="chev" aria-hidden="true">▾</span>
+        </button>
+        <div class="collapse-body">
+          <div class="alertbox" style="margin-top:0">${day.alert.body}</div>
         </div>
-        ${day.alert ? `<div class="alertbox"><b>⚠️ ${day.alert.ttl}</b>${day.alert.body}</div>` : ``}
+      </section>` : ``}
+
+      <section class="section open" data-collapse>
+        <button class="collapser" type="button" aria-expanded="true">
+          <div class="h teal"><span class="star">✦</span> What to bring</div>
+          <span class="chev" aria-hidden="true">▾</span>
+        </button>
+        <div class="collapse-body">
+          <div class="bringbox" style="margin-top:0">
+            <div class="bringlist" style="margin-top:0">
+              ${day.bring.map((b,idx) => `<span class="tag ${idx%3===0?'warm':idx%3===1?'cool':''}">${b}</span>`).join("")}
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section class="section">
-        <div class="bringbox">
-          <div class="h teal"><span class="star">✦</span> What to bring</div>
-          <div class="bringlist">
-            ${day.bring.map((b,idx) => `<span class="tag ${idx%3===0?'warm':idx%3===1?'cool':''}">${b}</span>`).join("")}
+      <section class="section open" data-collapse>
+        <button class="collapser" type="button" aria-expanded="true">
+          <div class="h"><span class="star">✦</span> The Plan</div>
+          <span class="chev" aria-hidden="true">▾</span>
+        </button>
+        <div class="collapse-body">
+          <div class="timeline">
+            ${day.plan.map(s => `
+              <div class="step">
+                <div class="when">${s.when}</div>
+                <div class="what">${s.what}</div>
+                ${s.note ? `<div class="note">${s.note}</div>` : ``}
+              </div>`).join("")}
           </div>
         </div>
       </section>
 
       ${day.logi ? `
-      <section class="section">
-        <div class="logi">
-          <div class="h"><span class="star">✦</span> ${day.logi.ttl}</div>
-          ${day.logi.lines.map(([k,v]) => `
-            <div class="row"><span>${k}</span><span>${v}</span></div>
-          `).join("")}
+      <section class="section open" data-collapse>
+        <button class="collapser" type="button" aria-expanded="true">
+          <div class="h green"><span class="star">✦</span> ${day.logi.ttl}</div>
+          <span class="chev" aria-hidden="true">▾</span>
+        </button>
+        <div class="collapse-body">
+          <div class="logi" style="margin-top:0">
+            ${day.logi.lines.map(([k,v]) => `
+              <div class="row"><span>${k}</span><span>${v}</span></div>
+            `).join("")}
+          </div>
         </div>
       </section>` : ``}
     </div>
   `;
+
+  card.querySelectorAll("[data-collapse] > .collapser").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const sec = btn.parentElement;
+      const open = sec.classList.toggle("open");
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+  });
 
   requestAnimationFrame(()=> requestAnimationFrame(()=> card.classList.add("in")));
 
